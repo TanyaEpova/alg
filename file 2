@@ -1,0 +1,37 @@
+class DependencyAnalyzer:
+    def __init__(self, graph: DependencyGraph):
+        self.graph = graph
+
+    def find_dependencies_bfs(self, start: str) -> List[List[str]]:
+        if start not in self.graph.vertices:
+            return []
+        visited = set()
+        queue = deque([start])
+        visited.add(start)
+        levels = []
+        while queue:
+            level_size = len(queue)
+            current_level = []
+            for _ in range(level_size):
+                node = queue.popleft()
+                for dep in self.graph.graph[node]:
+                    if dep not in visited:
+                        visited.add(dep)
+                        current_level.append(dep)
+                        queue.append(dep)
+            if current_level:
+                levels.append(current_level)
+        return levels
+
+    def find_dependencies_dfs(self, start: str) -> Set[str]:
+        visited = set()
+
+        def dfs(node):
+            for dep in self.graph.graph[node]:
+                if dep not in visited:
+                    visited.add(dep)
+                    dfs(dep)
+
+        if start in self.graph.vertices:
+            dfs(start)
+        return visited
